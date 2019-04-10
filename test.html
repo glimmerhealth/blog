@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blog Render Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/commonmark/0.28.1/commonmark.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
+
+
+</head>
+<body>
+    <section class="content" style="margin: 5%">
+            <div id="content"></div>
+    </section>
+</body>
+<script >
+    const postMdPath="./1/post.md";
+    const postMetaDataPath="./1/post.json";
+    let postContent = "";
+    
+    populatePostMetaData(postMetaDataPath, putPostDataOnPage);
+
+    function populatePostMetaData(inPostMetaDataPath, cbFunc)
+    {
+        fetch(inPostMetaDataPath)
+        .then(function(response) 
+        {
+            return response.text();
+        })
+        .then(function(retText) 
+        {
+            const postData = JSON.parse(retText);
+            
+            cbFunc(postData);
+        });
+
+    }
+
+    function putPostDataOnPage(inMetaData)
+    {
+        postContent = postContent + "# " + inMetaData.title + "\n";
+        postContent = postContent + "#### by " + inMetaData.authors[0] + "\n";
+        postContent = postContent + "##### Published Date: " + inMetaData.publishDate + "\n";
+        getHtmlFromNetMdFile(postMdPath, setContent);
+    }
+
+    function getHtmlFromNetMdFile(inFilePath, cbFunc)
+    {
+        fetch(inFilePath)
+        .then(function(response) 
+        {
+            return response.text();
+        })
+        .then(function(retText) 
+        {
+            const inStr = retText;
+            const retHtmlStr=getHtmlFromMdString(inStr);
+            cbFunc(retHtmlStr);
+        });
+
+    }
+
+    function getHtmlFromMdString(inStr)
+    {
+        const mdIn = postContent + inStr;
+        const reader = new commonmark.Parser();
+        const writer = new commonmark.HtmlRenderer();
+        const parsed = reader.parse(mdIn); // parsed is a 'Node' tree
+        const result = writer.render(parsed); // result is a String
+        return result;
+    }
+
+    function setContent(inHtml)
+    {
+        let contentEle = document.getElementById("content");
+        contentEle.innerHTML = inHtml;
+    }
+
+
+
+</script>
+</html>
