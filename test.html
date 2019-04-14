@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Blog Render Test</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/commonmark/0.28.1/commonmark.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
 
 
@@ -16,8 +16,8 @@
     </section>
 </body>
 <script >
-    const postMdPath="./1/post.md";
-    const postMetaDataPath="./1/post.json";
+    const postMdPath="./1/1.md";
+    const postMetaDataPath="./1/1.json";
     let postContent = "";
     
     populatePostMetaData(postMetaDataPath, putPostDataOnPage);
@@ -64,11 +64,12 @@
 
     function getHtmlFromMdString(inStr)
     {
-        const mdIn = postContent + inStr;
-        const reader = new commonmark.Parser();
-        const writer = new commonmark.HtmlRenderer();
-        const parsed = reader.parse(mdIn); // parsed is a 'Node' tree
-        const result = writer.render(parsed); // result is a String
+        const md = markdownit({
+            html: true,
+            linkify: true,
+            typographer: true
+            });
+        const result = md.render(inStr);
         return result;
     }
 
